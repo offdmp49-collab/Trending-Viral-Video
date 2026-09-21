@@ -6,30 +6,30 @@
 <title>Trending Viral Video</title>
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2230;--red:#ec4899;--red2:#f472b6;--red-dark:#9d174d;--red-rgb:236,72,153;--gold:#ffd700;--green:#10b981;--blue:#0ea5e9;--text:#f0f0f0;--text2:#8b949e;--border:#30363d;}
+:root{--bg:#000000;--bg2:#121212;--bg3:#1a1a1a;--red:#ffd400;--red2:#ffe873;--gold:#ffc400;--green:#22c55e;--blue:#06b6d4;--text:#ffffff;--text2:#c9c9a3;--border:#3a3520;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh;overflow-x:hidden;padding-bottom:80px;}
-.top-banner{background:linear-gradient(90deg,var(--red-dark),var(--red),var(--red-dark));text-align:center;padding:9px 16px;font-size:14px;font-weight:700;}
+.top-banner{background:linear-gradient(90deg,#000000,var(--red),#000000);color:#000;text-align:center;padding:9px 16px;font-size:14px;font-weight:700;}
 header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;display:flex;align-items:center;justify-content:space-between;height:54px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.5);}
 .logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;color:#fff;white-space:nowrap;min-width:0;}
 .logo-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--red),var(--red2));border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;}
 .logo span{color:var(--red);}
-.search-btn{background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#fff;padding:8px 16px;border-radius:8px;font-family:inherit;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;}
+.search-btn{background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#000;padding:8px 16px;border-radius:8px;font-family:inherit;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;}
 /* CHAT POPUP */
-.chat-popup{position:fixed;top:70px;left:14px;right:14px;background:linear-gradient(135deg,#1a2a5e,#1e3a8a);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideDown .4s ease;}
+.chat-popup{position:fixed;top:70px;left:14px;right:14px;background:linear-gradient(135deg,#1e2937,#0f3d3e);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideDown .4s ease;}
 @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 .chat-popup.hidden{display:none;}
-.chat-avatar-ph{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--red),#ff6b7a);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
+.chat-avatar-ph{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--red),var(--gold));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden;}
 .chat-avatar-ph img{width:100%;height:100%;object-fit:cover;}
 .chat-info{flex:1;}
 .chat-name{font-weight:700;font-size:15px;margin-bottom:3px;}
-.chat-msg{font-size:12px;color:#cce0ff;line-height:1.4;}
-.chat-btn{background:#fff;color:#1a2a5e;border:none;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.chat-msg{font-size:12px;color:#c9e9e8;line-height:1.4;}
+.chat-btn{background:#fff;color:#0f3d3e;border:none;padding:8px 14px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0;}
 .chat-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#aaa;font-size:18px;cursor:pointer;line-height:1;}
 /* SECTIONS */
 .section-header{background:var(--red);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:4px;}
 .badge-num{background:#fff;color:var(--red);font-weight:800;font-size:13px;padding:2px 8px;border-radius:6px;}
-.section-date{font-weight:700;font-size:15px;color:#fff;}
+.section-date{font-weight:700;font-size:15px;color:#000;}
 .posts-scroll-wrap{background:var(--bg2);padding:12px 14px;}
 .posts-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;}
 .posts-scroll::-webkit-scrollbar{height:3px;}
@@ -41,12 +41,12 @@ header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;d
 .post-thumb-wrap img{width:100%;height:100%;object-fit:cover;}
 .post-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;}
 .play-btn-sm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);}
-.play-btn-sm span{width:32px;height:32px;background:rgba(var(--red-rgb),.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.play-btn-sm span{width:32px;height:32px;background:rgba(255,212,0,.85);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;}
 .badges-row{position:absolute;top:5px;left:5px;display:flex;gap:3px;flex-wrap:wrap;}
 .bh{background:var(--blue);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;}
 .bp{background:var(--gold);color:#000;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;}
 .bn{background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;}
-.b4{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;}
+.b4{background:var(--red);color:#000;font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;}
 .post-card-title{padding:6px 8px 8px;font-size:12px;font-weight:600;line-height:1.35;}
 /* TRENDING */
 .trending-header{background:var(--red);padding:10px 14px;margin-top:4px;}
@@ -58,7 +58,7 @@ header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;d
 .trending-thumb img{width:100%;height:100%;object-fit:cover;}
 .trending-thumb-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;}
 .trending-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);}
-.trending-play-btn{width:52px;height:52px;background:rgba(var(--red-rgb),.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.trending-play-btn{width:52px;height:52px;background:rgba(255,212,0,.9);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;}
 .trending-title{padding:10px 12px 12px;font-size:15px;font-weight:600;}
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;justify-content:space-around;align-items:flex-end;padding:6px 0 10px;z-index:100;}
@@ -66,7 +66,7 @@ header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;d
 .nav-item.active,.nav-item:hover{color:var(--red);}
 .nav-item .ni{font-size:22px;}
 .nav-home{position:relative;top:-8px;}
-.nav-home .ni-wrap{background:linear-gradient(135deg,var(--red),var(--red2));border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 18px rgba(var(--red-rgb),.5);}
+.nav-home .ni-wrap{background:linear-gradient(135deg,var(--red),var(--red2));border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 18px rgba(255,212,0,.5);}
 .notif-wrap{position:relative;}
 .notif-dot{position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:8px;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
 /* EMPTY / LOADING */
@@ -85,7 +85,7 @@ header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;d
 .v-embed iframe{width:100%;height:100%;border:none;}
 .v-title{font-size:17px;font-weight:700;margin-bottom:6px;}
 .v-meta{color:var(--text2);font-size:13px;margin-bottom:16px;}
-.v-dl-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#fff;padding:14px;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.v-dl-btn{width:100%;background:linear-gradient(135deg,var(--red),var(--red2));border:none;color:#000;padding:14px;border-radius:10px;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
 /* SEARCH MODAL */
 .s-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:400;padding:14px;}
 .s-modal.open{display:block;}
@@ -98,7 +98,7 @@ header{background:var(--bg2);border-bottom:2px solid var(--red);padding:0 14px;d
 .ad-loader{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;flex-direction:column;}
 .ad-loader.show{display:flex;}
 .ad-spin{width:46px;height:46px;border:3px solid var(--border);border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:14px;}
-.float-msg{position:fixed;bottom:90px;right:16px;width:48px;height:48px;background:linear-gradient(135deg,var(--red),var(--red2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 15px rgba(var(--red-rgb),.5);z-index:99;}
+.float-msg{position:fixed;bottom:90px;right:16px;width:48px;height:48px;background:linear-gradient(135deg,var(--red),var(--red2));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 15px rgba(255,212,0,.5);z-index:99;}
 </style>
 </head>
 <body>
@@ -160,10 +160,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // ===== কনফিগ =====
-// ১) নিচের লিংকে আপনার নতুন Firebase Realtime Database এর URL বসান (index.html ও admin.html দুটোতেই একই)
+// নতুন Firebase Realtime Database (index.html ও admin.html দুটোতেই একই থাকবে)
 const FIREBASE_DB_URL = "https://trending-viral-video-default-rtdb.firebaseio.com";
-// ২) প্রতিটি সাইটের ডেটা আলাদা থাকে সাইটের ডোমেইন নাম দিয়ে (স্বয়ংক্রিয়)।
-//    admin আর index আলাদা ডোমেইনে থাকলে দুটোতেই একই নাম এখানে লিখে দিন (যেমন "mysite1")।
+// প্রতিটি সাইটের ডেটা আলাদা থাকে সাইটের ডোমেইন নাম দিয়ে (স্বয়ংক্রিয়)।
+// admin আর index আলাদা ডোমেইনে থাকলে বা ডোমেইন বদলাতে পারে এমন হলে দুটোতেই একই নাম এখানে লিখে দিন (যেমন "site1")।
 const SITE_ID_OVERRIDE = "";
 const SITE_ID = (SITE_ID_OVERRIDE || location.hostname || "local").toLowerCase().replace(/^www\./, "").replace(/[.#$\[\]\/]/g, "_");
 const BASE = `sites/${SITE_ID}`;
