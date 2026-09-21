@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trending Viral Video — অ্যাডমিন প্যানেল</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000000;--bg2:#121212;--bg3:#1a1a1a;--bg4:#212121;--accent:#ec4899;--accent2:#f472b6;--green:#22c55e;--red-err:#ef4444;--blue:#06b6d4;--text:#ffffff;--text2:#d4c2cc;--text3:#8f7a86;--border:#3a2030;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+/* ---- LOGIN GATE ---- */
+.gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;gap:18px;padding:20px;}
+.gate.hidden{display:none;}
+.gate-logo{font-size:22px;font-weight:700;}
+.gate-logo span{color:var(--accent);}
+.gate-box{width:100%;max-width:320px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center;}
+.gate-box p{color:var(--text3);font-size:13px;margin-bottom:14px;}
+.gate-box input{width:100%;background:var(--bg3);border:1px solid var(--border);color:#fff;padding:12px 14px;border-radius:9px;font-family:inherit;font-size:15px;margin-bottom:10px;text-align:center;letter-spacing:2px;}
+.gate-box input:focus{outline:none;border-color:var(--accent);}
+.gate-box button{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;padding:12px;border-radius:9px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;}
+.gate-err{color:var(--red-err);font-size:12px;margin-top:8px;min-height:14px;}
+.gate-note{color:var(--text3);font-size:11px;max-width:320px;text-align:center;line-height:1.5;}
+
+/* ---- SHELL ---- */
+.shell{display:none;min-height:100vh;}
+.shell.show{display:flex;}
+.sidebar{width:220px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;}
+.side-logo{font-size:15px;line-height:1.3;font-weight:700;padding:0 8px 20px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+.side-logo span{color:var(--accent);}
+.side-nav{display:flex;flex-direction:column;gap:4px;flex:1;}
+.side-item{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:9px;color:var(--text2);cursor:pointer;font-size:14px;font-weight:600;transition:.15s;}
+.side-item:hover{background:var(--bg3);color:#fff;}
+.side-item.active{background:linear-gradient(135deg,rgba(236,72,153,.16),rgba(236,72,153,.04));color:var(--accent);}
+.side-item .ic{font-size:17px;width:20px;text-align:center;}
+.side-foot{border-top:1px solid var(--border);padding-top:12px;font-size:11px;color:var(--text3);display:flex;flex-direction:column;gap:8px;}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--text2);padding:8px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:12px;}
+.logout-btn:hover{border-color:var(--red-err);color:var(--red-err);}
+
+.main{flex:1;min-width:0;padding:22px 26px 60px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.topbar h1{font-size:21px;font-weight:700;}
+.conn-pill{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);background:var(--bg2);border:1px solid var(--border);padding:6px 12px;border-radius:20px;}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--green);}
+.conn-dot.off{background:var(--red-err);}
+
+/* ---- STATS ---- */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:22px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.stat-num{font-size:24px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.stat-lbl{font-size:12px;color:var(--text3);margin-top:2px;}
+
+/* ---- PANEL ---- */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:18px;}
+.panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.panel-head h2{font-size:15px;font-weight:700;}
+.btn{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;padding:9px 16px;border-radius:9px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+.btn:hover{filter:brightness(1.05);}
+.btn.ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}
+.btn.danger{background:rgba(239,68,68,.12);color:var(--red-err);border:1px solid rgba(239,68,68,.35);}
+.btn.sm{padding:6px 11px;font-size:12px;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* search / filter */
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.toolbar input[type=text]{flex:1;min-width:180px;background:var(--bg3);border:1px solid var(--border);color:#fff;padding:9px 12px;border-radius:9px;font-family:inherit;font-size:13px;}
+.toolbar select{background:var(--bg3);border:1px solid var(--border);color:#fff;padding:9px 12px;border-radius:9px;font-family:inherit;font-size:13px;}
+.toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--accent);}
+
+/* ---- POST TABLE/LIST ---- */
+.post-row{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:8px;}
+.post-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;background:var(--bg4);}
+.post-thumb-ph{width:56px;height:56px;border-radius:8px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.post-info-title{font-size:13.5px;font-weight:600;margin-bottom:3px;line-height:1.3;}
+.post-info-meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text3);}
+.tag{padding:1px 7px;border-radius:5px;font-weight:700;font-size:9.5px;}
+.tag.hd{background:var(--blue);color:#fff;}
+.tag.k4{background:var(--accent);color:#000;}
+.tag.premium{background:#ffd700;color:#000;}
+.tag.new{background:var(--green);color:#fff;}
+.tag.trend{background:linear-gradient(135deg,#ff4d4d,#ff9900);color:#fff;}
+.tag.off{background:var(--bg4);color:var(--text3);}
+.post-actions{display:flex;gap:6px;}
+.icon-btn{background:var(--bg4);border:1px solid var(--border);color:var(--text2);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);}
+.icon-btn.del:hover{border-color:var(--red-err);color:var(--red-err);}
+
+/* ---- FORM MODAL ---- */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;align-items:flex-start;justify-content:center;padding:30px 16px;overflow-y:auto;}
+.modal-overlay.open{display:flex;}
+.modal-box{width:100%;max-width:620px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;margin-bottom:40px;}
+.modal-box h3{font-size:17px;font-weight:700;margin-bottom:16px;}
+.field{margin-bottom:13px;}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:600;}
+.field .hint{font-size:10.5px;color:var(--text3);font-weight:400;margin-left:4px;}
+.field input[type=text],.field input[type=url],.field input[type=number],.field textarea,.field select{width:100%;background:var(--bg3);border:1px solid var(--border);color:#fff;padding:10px 12px;border-radius:9px;font-family:inherit;font-size:13.5px;}
+.field textarea{resize:vertical;min-height:70px;font-family:'JetBrains Mono',monospace;font-size:12px;}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--accent);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.check-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px;}
+.check-item{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;}
+.check-item input{width:16px;height:16px;accent-color:var(--accent);}
+.thumb-preview{width:100%;height:130px;border-radius:10px;background:var(--bg3);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:10px;color:var(--text3);font-size:12px;}
+.thumb-preview img{width:100%;height:100%;object-fit:cover;}
+.modal-footer{display:flex;justify-content:space-between;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);}
+.section-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);font-weight:700;margin:18px 0 8px;}
+.section-lbl:first-child{margin-top:0;}
+
+.empty{text-align:center;padding:40px 16px;color:var(--text3);}
+.empty .ei{font-size:36px;margin-bottom:10px;}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--border);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;z-index:900;display:none;box-shadow:0 6px 20px rgba(0,0,0,.5);}
+.toast.show{display:block;animation:fadeUp .25s ease;}
+.toast.err{border-color:var(--red-err);color:var(--red-err);}
+@keyframes fadeUp{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}
+
+@media(max-width:760px){
+  .shell.show{flex-direction:column;}
+  .sidebar{width:100%;height:auto;position:sticky;flex-direction:row;align-items:center;padding:10px 12px;overflow-x:auto;}
+  .side-logo{display:none;}
+  .side-nav{flex-direction:row;flex:none;}
+  .side-foot{display:none;}
+  .main{padding:16px;}
+  .post-row{grid-template-columns:44px 1fr auto;}
+  .grid2{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN GATE -->
+<div class="gate" id="gate">
+  <div class="gate-logo">🎬 Trending<span> Viral Video</span> অ্যাডমিন</div>
+  <div class="gate-box">
+    <p>চালিয়ে যেতে অ্যাক্সেস কোড দিন</p>
+    <input type="password" id="passInput" placeholder="• • • • • •" autocomplete="off">
+    <button onclick="tryLogin()">প্রবেশ করুন</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+  <div class="gate-note">এই কোডটি শুধু এই ব্রাউজারে যাচাই হয়। ডেটাবেস সুরক্ষার জন্য Firebase Realtime Database Rules আলাদাভাবে সেট করে নিন।</div>
+</div>
+
+<!-- SHELL -->
+<div class="shell" id="shell">
+  <div class="sidebar">
+    <div class="side-logo">🎬 Trending<span> Viral Video</span></div>
+    <div class="side-nav">
+      <div class="side-item active" data-tab="posts" onclick="switchTab('posts')"><span class="ic">🎬</span>পোস্ট ম্যানেজমেন্ট</div>
+      <div class="side-item" data-tab="settings" onclick="switchTab('settings')"><span class="ic">⚙️</span>সাইট সেটিংস</div>
+      <div class="side-item" data-tab="monetize" onclick="switchTab('monetize')"><span class="ic">💰</span>বিজ্ঞাপন / মনিটাইজেশন</div>
+    </div>
+    <div class="side-foot">
+      <span id="connFoot">সংযোগ পরীক্ষা হচ্ছে...</span>
+      <button class="logout-btn" onclick="logout()">লগ-আউট</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1 id="pageTitle">পোস্ট ম্যানেজমেন্ট</h1>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><div class="conn-pill" title="এই অ্যাডমিন শুধু এই সাইটের ডেটা দেখায়">🌐 <span class="mono" id="siteIdText"></span></div><div class="conn-pill"><span class="conn-dot" id="connDot"></span><span id="connText">সংযুক্ত হচ্ছে...</span></div></div>
+    </div>
+
+    <!-- ===== POSTS TAB ===== -->
+    <div id="tab-posts">
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">মোট পোস্ট</div></div>
+        <div class="stat-card"><div class="stat-num" id="statActive">0</div><div class="stat-lbl">সক্রিয়</div></div>
+        <div class="stat-card"><div class="stat-num" id="statTrend">0</div><div class="stat-lbl">ট্রেন্ডিং</div></div>
+        <div class="stat-card"><div class="stat-num" id="statViews">0</div><div class="stat-lbl">মোট ভিউ</div></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>সকল পোস্ট</h2>
+          <button class="btn" onclick="openPostForm()">＋ নতুন পোস্ট</button>
+        </div>
+        <div class="toolbar">
+          <input type="text" id="postSearch" placeholder="শিরোনাম দিয়ে খুঁজুন..." oninput="renderPosts()">
+          <select id="postFilter" onchange="renderPosts()">
+            <option value="all">সব</option>
+            <option value="active">সক্রিয় শুধু</option>
+            <option value="inactive">নিষ্ক্রিয় শুধু</option>
+            <option value="trending">ট্রেন্ডিং শুধু</option>
+          </select>
+        </div>
+        <div id="postList"></div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS TAB ===== -->
+    <div id="tab-settings" style="display:none">
+      <div class="panel">
+        <div class="panel-head"><h2>চ্যাট পপ-আপ</h2></div>
+        <div class="section-lbl">প্রদর্শন</div>
+        <div class="grid2">
+          <div class="field"><label>নাম</label><input type="text" id="s_chatName" placeholder="LINA"></div>
+          <div class="field"><label>ছবির URL</label><input type="url" id="s_chatImg" placeholder="https://..."></div>
+        </div>
+        <div class="field"><label>বার্তা</label><input type="text" id="s_chatMsg" placeholder="আমি তোমার সমস্ত কল্পনা পূরণ করব!"></div>
+        <div class="field"><label>চ্যাট লিংক <span class="hint">(এই লিংক না থাকলে পপ-আপ দেখাবে না)</span></label><input type="url" id="s_chatLink" placeholder="https://..."></div>
+        <div class="modal-footer" style="border-top:none;padding-top:6px">
+          <span></span>
+          <button class="btn" onclick="saveSettings()">সেভ করুন</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== MONETIZE TAB ===== -->
+    <div id="tab-monetize" style="display:none">
+      <div class="panel">
+        <div class="panel-head"><h2>ক্লিক-ফ্লো লিংক</h2></div>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:14px">প্রতিটি পোস্টে ক্লিক করলে, ভিডিও ওপেন হওয়ার আগে এই ধাপগুলো (পপ-আন্ডার → ডাইরেক্ট লিংক → মনিটাগ) ক্রমান্বয়ে দেখানো হয়। পোস্ট-নির্দিষ্ট লিংক না থাকলে এই ডিফল্টগুলো ব্যবহার হবে।</p>
+        <div class="field"><label>পপ-আন্ডার URL <span class="hint">(ধাপ ১)</span></label><input type="url" id="s_popunderUrl" placeholder="https://..."></div>
+        <div class="field"><label>ডিফল্ট ডাইরেক্ট লিংক <span class="hint">(ধাপ ২)</span></label><input type="url" id="s_directLink2" placeholder="https://..."></div>
+        <div class="field"><label>মনিটাগ URL <span class="hint">(ধাপ ৩)</span></label><input type="url" id="s_monetagUrl" placeholder="https://..."></div>
+        <div class="field"><label>ডাউনলোড বাটনের বিজ্ঞাপন URL</label><input type="url" id="s_downloadAdUrl" placeholder="https://..."></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>বিজ্ঞাপন স্ক্রিপ্ট</h2></div>
+        <div class="field"><label>Monetag Script URL</label><input type="url" id="s_monetagScript" placeholder="https://..."></div>
+        <div class="field"><label>Adsterra Script URL</label><input type="url" id="s_adsterraScript" placeholder="https://..."></div>
+        <div class="modal-footer" style="border-top:none;padding-top:6px">
+          <span></span>
+          <button class="btn" onclick="saveSettings()">সেভ করুন</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POST FORM MODAL -->
+<div class="modal-overlay" id="postModal">
+  <div class="modal-box">
+    <h3 id="postModalTitle">নতুন পোস্ট</h3>
+    <input type="hidden" id="p_id">
+
+    <div class="section-lbl">মূল তথ্য</div>
+    <div class="field"><label>শিরোনাম *</label><input type="text" id="p_title" placeholder="ভিডিওর শিরোনাম লিখুন"></div>
+    <div class="thumb-preview" id="thumbPreview">থাম্বনেইল প্রিভিউ</div>
+    <div class="field"><label>থাম্বনেইল URL</label><input type="url" id="p_thumbnail" placeholder="https://..." oninput="updateThumbPreview()"></div>
+    <div class="grid2">
+      <div class="field"><label>সেকশন</label><input type="text" id="p_section" placeholder="যেমন: Romantic"></div>
+      <div class="field"><label>তারিখ</label><input type="text" id="p_date" placeholder="যেমন: ১৩ আগস্ট"></div>
+    </div>
+
+    <div class="section-lbl">ভিডিও সোর্স</div>
+    <div class="field"><label>ভিডিও URL <span class="hint">(YouTube লিংক বা সরাসরি embed URL)</span></label><input type="url" id="p_videoUrl" placeholder="https://youtube.com/watch?v=..."></div>
+    <div class="field"><label>অথবা কাস্টম Embed কোড <span class="hint">(থাকলে ভিডিও URL উপেক্ষা হবে)</span></label><textarea id="p_embedCode" placeholder="&lt;iframe src=...&gt;&lt;/iframe&gt;"></textarea></div>
+    <div class="grid2">
+      <div class="field"><label>ডাউনলোড URL</label><input type="url" id="p_downloadUrl" placeholder="https://..."></div>
+      <div class="field"><label>পোস্ট-নির্দিষ্ট ডাইরেক্ট লিংক</label><input type="url" id="p_directLink" placeholder="খালি রাখলে ডিফল্ট ব্যবহার হবে"></div>
+    </div>
+    <div class="field"><label>পোস্ট-নির্দিষ্ট ডাউনলোড বিজ্ঞাপন URL</label><input type="url" id="p_downloadAdUrl" placeholder="খালি রাখলে ডিফল্ট ব্যবহার হবে"></div>
+
+    <div class="section-lbl">ব্যাজ ও স্ট্যাটাস</div>
+    <div class="check-row">
+      <label class="check-item"><input type="checkbox" id="p_badgeHD"> HD</label>
+      <label class="check-item"><input type="checkbox" id="p_badge4K"> 4K</label>
+      <label class="check-item"><input type="checkbox" id="p_badgePremium"> PREMIUM</label>
+      <label class="check-item"><input type="checkbox" id="p_badgeNew"> NEW</label>
+      <label class="check-item"><input type="checkbox" id="p_trending"> 🔥 ট্রেন্ডিং</label>
+      <label class="check-item"><input type="checkbox" id="p_active" checked> সক্রিয়</label>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn ghost" onclick="closePostForm()">বাতিল</button>
+      <button class="btn" id="postSaveBtn" onclick="savePost()">পোস্ট সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ===== কনফিগ =====
+// ১) নিচের লিংকে আপনার নতুন Firebase Realtime Database এর URL বসান (index.html ও admin.html দুটোতেই একই)
+const FIREBASE_DB_URL = "https://trending-viral-video-default-rtdb.firebaseio.com";
+// ২) প্রতিটি সাইটের ডেটা আলাদা থাকে সাইটের ডোমেইন নাম দিয়ে (স্বয়ংক্রিয়)।
+//    admin আর index আলাদা ডোমেইনে থাকলে দুটোতেই একই নাম এখানে লিখে দিন (যেমন "mysite1")।
+const SITE_ID_OVERRIDE = "";
+const SITE_ID = (SITE_ID_OVERRIDE || location.hostname || "local").toLowerCase().replace(/^www\./, "").replace(/[.#$\[\]\/]/g, "_");
+const BASE = `sites/${SITE_ID}`;
+
+const app = initializeApp({ databaseURL: FIREBASE_DB_URL });
+document.getElementById('siteIdText').textContent = SITE_ID;
+const db = getDatabase(app);
+
+let posts = [], settings = {}, editingId = null;
+
+// ---- connection status ----
+onValue(ref(db, ".info/connected"), snap => {
+  const ok = snap.val() === true;
+  document.getElementById('connDot').classList.toggle('off', !ok);
+  document.getElementById('connText').textContent = ok ? 'সংযুক্ত' : 'সংযোগ বিচ্ছিন্ন';
+  document.getElementById('connFoot').textContent = ok ? '🟢 ডাটাবেসের সাথে সংযুক্ত' : '🔴 সংযোগ নেই';
+});
+
+// ---- load data ----
+onValue(ref(db, BASE + '/posts'), snap => {
+  const data = snap.val();
+  posts = data ? Object.keys(data).map(id => ({ id, ...data[id] })).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)) : [];
+  renderPosts();
+  renderStats();
+});
+
+onValue(ref(db, BASE + '/settings'), snap => {
+  settings = snap.val() || {};
+  fillSettingsForm();
+});
+
+// ---- login gate ----
+const SESSION_KEY = 'promhubx_admin_ok';
+window.tryLogin = () => {
+  const val = document.getElementById('passInput').value.trim();
+  const stored = localStorage.getItem('promhubx_admin_code');
+  if (!stored) { localStorage.setItem('promhubx_admin_code', val); unlock(); return; }
+  if (val === stored) { unlock(); }
+  else { document.getElementById('gateErr').textContent = 'কোড সঠিক নয়'; }
+};
+document.getElementById('passInput').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+function unlock(){
+  sessionStorage.setItem(SESSION_KEY,'1');
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('shell').classList.add('show');
+}
+window.logout = () => { sessionStorage.removeItem(SESSION_KEY); location.reload(); };
+if (sessionStorage.getItem(SESSION_KEY) === '1') unlock();
+
+// ---- tabs ----
+const titles = { posts:'পোস্ট ম্যানেজমেন্ট', settings:'সাইট সেটিংস', monetize:'বিজ্ঞাপন / মনিটাইজেশন' };
+window.switchTab = (tab) => {
+  ['posts','settings','monetize'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display = t===tab ? '' : 'none';
+    document.querySelector(`.side-item[data-tab="${t}"]`).classList.toggle('active', t===tab);
+  });
+  document.getElementById('pageTitle').textContent = titles[tab];
+};
+
+// ---- stats ----
+function renderStats(){
+  const active = posts.filter(p=>p.active!==false);
+  const trending = posts.filter(p=>p.trending);
+  const views = posts.reduce((s,p)=>s+(p.views||0),0);
+  document.getElementById('statTotal').textContent = posts.length;
+  document.getElementById('statActive').textContent = active.length;
+  document.getElementById('statTrend').textContent = trending.length;
+  document.getElementById('statViews').textContent = views;
+}
+
+// ---- posts list ----
+function badgeTags(p){
+  let h = '';
+  h += p.badgeHD ? '<span class="tag hd">HD</span>' : '';
+  h += p.badge4K ? '<span class="tag k4">4K</span>' : '';
+  h += p.badgePremium ? '<span class="tag premium">PREMIUM</span>' : '';
+  h += p.badgeNew ? '<span class="tag new">NEW</span>' : '';
+  h += p.trending ? '<span class="tag trend">🔥 TREND</span>' : '';
+  h += p.active===false ? '<span class="tag off">নিষ্ক্রিয়</span>' : '';
+  return h;
+}
+window.renderPosts = () => {
+  const q = (document.getElementById('postSearch').value || '').toLowerCase();
+  const filter = document.getElementById('postFilter').value;
+  let list = posts.filter(p => (p.title||'').toLowerCase().includes(q));
+  if (filter==='active') list = list.filter(p=>p.active!==false);
+  if (filter==='inactive') list = list.filter(p=>p.active===false);
+  if (filter==='trending') list = list.filter(p=>p.trending);
+
+  const el = document.getElementById('postList');
+  if (!list.length) { el.innerHTML = '<div class="empty"><div class="ei">🎬</div><p>কোনো পোস্ট পাওয়া যায়নি</p></div>'; return; }
+  el.innerHTML = list.map(p => `
+    <div class="post-row">
+      ${p.thumbnail ? `<img class="post-thumb" src="${escAttr(p.thumbnail)}" onerror="this.style.display='none'">` : '<div class="post-thumb-ph">🎬</div>'}
+      <div>
+        <div class="post-info-title">${escHtml(p.title||'(শিরোনাম নেই)')}</div>
+        <div class="post-info-meta">${badgeTags(p)}<span>${escHtml(p.section||'-')}</span><span>·</span><span>${escHtml(p.date||'-')}</span><span>·</span><span>👁 ${p.views||0}</span></div>
+      </div>
+      <div class="post-actions">
+        <button class="icon-btn" title="এডিট" onclick="openPostForm('${p.id}')">✏️</button>
+        <button class="icon-btn del" title="ডিলিট" onclick="deletePost('${p.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+};
+
+function escHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escAttr(s){ return String(s).replace(/"/g,'&quot;'); }
+
+// ---- post form ----
+window.openPostForm = (id) => {
+  editingId = id || null;
+  document.getElementById('postModalTitle').textContent = id ? 'পোস্ট এডিট করুন' : 'নতুন পোস্ট';
+  const p = id ? posts.find(x=>x.id===id) : {};
+  document.getElementById('p_title').value = p.title || '';
+  document.getElementById('p_thumbnail').value = p.thumbnail || '';
+  document.getElementById('p_section').value = p.section || '';
+  document.getElementById('p_date').value = p.date || '';
+  document.getElementById('p_videoUrl').value = p.videoUrl || '';
+  document.getElementById('p_embedCode').value = p.embedCode || '';
+  document.getElementById('p_downloadUrl').value = p.downloadUrl || '';
+  document.getElementById('p_directLink').value = p.directLink || '';
+  document.getElementById('p_downloadAdUrl').value = p.downloadAdUrl || '';
+  document.getElementById('p_badgeHD').checked = !!p.badgeHD;
+  document.getElementById('p_badge4K').checked = !!p.badge4K;
+  document.getElementById('p_badgePremium').checked = !!p.badgePremium;
+  document.getElementById('p_badgeNew').checked = !!p.badgeNew;
+  document.getElementById('p_trending').checked = !!p.trending;
+  document.getElementById('p_active').checked = p.active !== false;
+  updateThumbPreview();
+  document.getElementById('postModal').classList.add('open');
+};
+window.closePostForm = () => { document.getElementById('postModal').classList.remove('open'); editingId=null; };
+window.updateThumbPreview = () => {
+  const url = document.getElementById('p_thumbnail').value.trim();
+  const box = document.getElementById('thumbPreview');
+  box.innerHTML = url ? `<img src="${escAttr(url)}" onerror="this.parentElement.textContent='ছবি লোড হয়নি'">` : 'থাম্বনেইল প্রিভিউ';
+};
+
+window.savePost = async () => {
+  const title = document.getElementById('p_title').value.trim();
+  if (!title) { showToast('শিরোনাম আবশ্যক', true); return; }
+  const btn = document.getElementById('postSaveBtn');
+  btn.disabled = true; btn.textContent = 'সেভ হচ্ছে...';
+  const data = {
+    title,
+    thumbnail: document.getElementById('p_thumbnail').value.trim(),
+    section: document.getElementById('p_section').value.trim(),
+    date: document.getElementById('p_date').value.trim(),
+    videoUrl: document.getElementById('p_videoUrl').value.trim(),
+    embedCode: document.getElementById('p_embedCode').value.trim(),
+    downloadUrl: document.getElementById('p_downloadUrl').value.trim(),
+    directLink: document.getElementById('p_directLink').value.trim(),
+    downloadAdUrl: document.getElementById('p_downloadAdUrl').value.trim(),
+    badgeHD: document.getElementById('p_badgeHD').checked,
+    badge4K: document.getElementById('p_badge4K').checked,
+    badgePremium: document.getElementById('p_badgePremium').checked,
+    badgeNew: document.getElementById('p_badgeNew').checked,
+    trending: document.getElementById('p_trending').checked,
+    active: document.getElementById('p_active').checked,
+  };
+  try {
+    if (editingId) {
+      const existing = posts.find(x=>x.id===editingId) || {};
+      await set(ref(db, `${BASE}/posts/${editingId}`), { ...existing, ...data, id: editingId });
+      showToast('পোস্ট আপডেট হয়েছে');
+    } else {
+      const newRef = push(ref(db, BASE + '/posts'));
+      await set(newRef, { ...data, id: newRef.key, createdAt: Date.now(), views: 0 });
+      showToast('নতুন পোস্ট যোগ হয়েছে');
+    }
+    closePostForm();
+  } catch(e) {
+    showToast('সেভ করতে সমস্যা হয়েছে: ' + e.message, true);
+  } finally {
+    btn.disabled = false; btn.textContent = 'পোস্ট সেভ করুন';
+  }
+};
+
+window.deletePost = async (id) => {
+  const p = posts.find(x=>x.id===id);
+  if (!confirm(`"${p ? p.title : 'এই পোস্ট'}" মুছে ফেলতে চান?`)) return;
+  try { await remove(ref(db, `${BASE}/posts/${id}`)); showToast('পোস্ট মুছে ফেলা হয়েছে'); }
+  catch(e) { showToast('মুছতে সমস্যা হয়েছে: ' + e.message, true); }
+};
+
+// ---- settings ----
+function fillSettingsForm(){
+  document.getElementById('s_chatName').value = settings.chatName || '';
+  document.getElementById('s_chatImg').value = settings.chatImg || '';
+  document.getElementById('s_chatMsg').value = settings.chatMsg || '';
+  document.getElementById('s_chatLink').value = settings.chatLink || '';
+  document.getElementById('s_popunderUrl').value = settings.popunderUrl || '';
+  document.getElementById('s_directLink2').value = settings.directLink2 || '';
+  document.getElementById('s_monetagUrl').value = settings.monetagUrl || '';
+  document.getElementById('s_downloadAdUrl').value = settings.downloadAdUrl || '';
+  document.getElementById('s_monetagScript').value = settings.monetagScript || '';
+  document.getElementById('s_adsterraScript').value = settings.adsterraScript || '';
+}
+window.saveSettings = async () => {
+  const data = {
+    chatName: document.getElementById('s_chatName').value.trim(),
+    chatImg: document.getElementById('s_chatImg').value.trim(),
+    chatMsg: document.getElementById('s_chatMsg').value.trim(),
+    chatLink: document.getElementById('s_chatLink').value.trim(),
+    popunderUrl: document.getElementById('s_popunderUrl').value.trim(),
+    directLink2: document.getElementById('s_directLink2').value.trim(),
+    monetagUrl: document.getElementById('s_monetagUrl').value.trim(),
+    downloadAdUrl: document.getElementById('s_downloadAdUrl').value.trim(),
+    monetagScript: document.getElementById('s_monetagScript').value.trim(),
+    adsterraScript: document.getElementById('s_adsterraScript').value.trim(),
+  };
+  try { await set(ref(db, BASE + '/settings'), data); showToast('সেটিংস সেভ হয়েছে'); }
+  catch(e) { showToast('সেভ করতে সমস্যা হয়েছে: ' + e.message, true); }
+};
+
+// ---- toast ----
+let toastTimer;
+function showToast(msg, isErr){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('err', !!isErr);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+window.showToast = showToast;
+</script>
+</body>
+</html>
