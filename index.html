@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <script src="https://recognitiondesperation.com/8b/12/aa/8b12aa3e4c231becaaca2948700664e7.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Trending Viral Video</title>
@@ -173,6 +172,20 @@ const app = initializeApp({ databaseURL: FIREBASE_DB_URL });
 const db = getDatabase(app);
 
 let posts = [], settings = {}, clickMap = {}, currentPost = null;
+// লিংকের শুরুতে https:// না থাকলে ব্রাউজার সেটাকে নিজের সাইটের ভেতরের পেজ ধরে 404 দেখায় — তাই ঠিক করে নেওয়া হয়
+// ভুল/ফাঁকা লিংক হলে কিছুই খোলা হয় না
+function fixUrl(u){
+  u = (u||'').trim();
+  if(!u) return '';
+  if(/^(tg:|mailto:|tel:|intent:)/i.test(u)) return u;
+  if(/^@[\w]{3,}$/.test(u)) return 'https://t.me/' + u.slice(1);
+  if(/^[a-z][a-z0-9+.\-]*:\/\//i.test(u)) { /* আগে থেকেই সঠিক */ }
+  else if(u.startsWith('//')) u = 'https:' + u;
+  else u = 'https://' + u.replace(/^\/+/, '');
+  try { const x = new URL(u); if(!x.hostname || !x.hostname.includes('.')) return ''; return u; } catch(e) { return ''; }
+}
+function openExt(u){ const x = fixUrl(u); if(x) { try { window.open(x, '_blank'); } catch(e) {} } }
+
 
 onValue(ref(db,BASE+'/settings'), snap => {
   settings = snap.val() || {};
@@ -237,14 +250,14 @@ window._click = id => {
   clickMap[id]++;
   const n=clickMap[id];
   if(n===1){
-    if(settings.popunderUrl) try{window.open(settings.popunderUrl,'_blank')}catch(e){}
+    openExt(settings.popunderUrl);
     showLoader(1200);
   } else if(n===2){
     const url=post.directLink||settings.directLink2||'';
-    if(url) window.open(url,'_blank');
+    openExt(url);
     showLoader(1000);
   } else if(n===3){
-    if(settings.monetagUrl) window.open(settings.monetagUrl,'_blank');
+    openExt(settings.monetagUrl);
     showLoader(1000);
   } else {
     clickMap[id]=0; openVideo(post);
@@ -256,7 +269,7 @@ function openVideo(post){
   if(post.embedCode) e=post.embedCode;
   else if(post.videoUrl){
     const yt=post.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
-    e=yt?`<iframe src="https://www.youtube.com/embed/${yt[1]}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`:`<iframe src="${post.videoUrl}" allowfullscreen allow="autoplay"></iframe>`;
+    e=yt?`<iframe src="https://www.youtube.com/embed/${yt[1]}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`:`<iframe src="${fixUrl(post.videoUrl)}" allowfullscreen allow="autoplay"></iframe>`;
   }
   document.getElementById('vEmbed').innerHTML=e||'<p style="color:#aaa;padding:30px;text-align:center">ভিডিও পাওয়া যাচ্ছে না</p>';
   document.getElementById('vTitle').textContent=post.title;
@@ -269,8 +282,8 @@ function openVideo(post){
 window.closeVideo=()=>{ document.getElementById('vModal').classList.remove('open'); document.getElementById('vEmbed').innerHTML=''; document.body.style.overflow=''; };
 window.handleDownload=()=>{
   const url=(currentPost&&currentPost.downloadAdUrl)||settings.downloadAdUrl||'';
-  if(url) window.open(url,'_blank');
-  if(currentPost&&currentPost.downloadUrl){ const a=document.createElement('a'); a.href=currentPost.downloadUrl; a.download=currentPost.title||'video'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+  openExt(url);
+  if(currentPost&&currentPost.downloadUrl){ const a=document.createElement('a'); a.href=fixUrl(currentPost.downloadUrl)||currentPost.downloadUrl; a.download=currentPost.title||'video'; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
 };
 window.openSearch=()=>{ document.getElementById('sModal').classList.add('open'); document.getElementById('sInput').focus(); };
 window.closeSearch=()=>{ document.getElementById('sModal').classList.remove('open'); };
@@ -284,8 +297,7 @@ window.doSearch=q=>{
 };
 function showLoader(ms){ const e=document.getElementById('adLoader'); e.classList.add('show'); setTimeout(()=>e.classList.remove('show'),ms); }
 window.scrollToTop=()=>window.scrollTo({top:0,behavior:'smooth'});
-window.openChatLink=()=>{ if(settings.chatLink) window.open(settings.chatLink,'_blank'); };
+window.openChatLink=()=>{ openExt(settings.chatLink); };
 </script>
 </body>
-  <script src="https://recognitiondesperation.com/c1/75/86/c1758634f115cdfae57762e379f599b4.js"></script>
 </html>
